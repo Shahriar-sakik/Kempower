@@ -81,5 +81,8 @@ Our processing pipeline generated the following technical profile across our act
 ## Environment Setup & Dependencies
 
 Ensure your data environment has the core data science libraries installed before execution:
+
+
+# I used AI for make a proper readme note
 ```bash
 pip install pandas numpy
