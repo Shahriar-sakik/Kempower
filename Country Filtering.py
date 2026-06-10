@@ -1,32 +1,11 @@
 import pandas as pd
 
-# 1. Define the files (Change these paths if your file names are different)
-raw_big_file = r"C:\Users\Md Shahriar\Desktop\project\public_passenger_dataset.csv"
-output_small_file = r"C:\Users\Md Shahriar\Desktop\project\filtered_europe_data.csv"
+# read the file in chunks of 100000 rows at a time
+chunks = []
+for chunk in pd.read_csv(r"C:\Users\Md Shahriar\Documents\Kempower\public_passenger_dataset.csv", chunksize=100000):
+    chunks.append(chunk["country"].value_counts())
 
-# 2. List the 9 countries you want to keep
-my_countries = [
-    "denmark", "norway", "sweden", "finland", "france", 
-    "united kingdom", "portugal", "latvia", "belgium"
-]
+# combine all chunks and add them up
+sessions = pd.concat(chunks).groupby(level=0).sum()
 
-print("Starting to filter... Please wait.")
-
-# 3. Read and filter the data in small chunks (groups of 100,000 rows at a time)
-is_first_chunk = True
-
-for chunk in pd.read_csv(raw_big_file, chunksize=100000):
-    # Clean up the country text (remove blank spaces and make it lowercase)
-    chunk['country'] = chunk['country'].astype(str).str.strip().str.lower()
-    
-    # Keep only the rows matching our 9 countries
-    filtered_chunk = chunk[chunk['country'].isin(my_countries)]
-    
-    # Save the filtered rows to a new CSV file
-    if is_first_chunk:
-        filtered_chunk.to_csv(output_small_file, index=False, mode='w')
-        is_first_chunk = False
-    else:
-        filtered_chunk.to_csv(output_small_file, index=False, mode='a', header=False)
-
-print(f"Done! Your clean, smaller dataset is saved at: {output_small_file}")
+print(sessions)
